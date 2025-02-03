@@ -3,13 +3,13 @@
 ## To Do
 
 - [x] Create basic navigation structure
-- [x] Implement dropdown menus for main nav items
+- [x] Implement expandable nav sections
 - [x] Add responsive mobile menu icon
 - [x] Style navigation with Tailwind CSS
 - [x] Add hover animations and transitions for car cards and side panel
 - [x] Add search functionality with unsplash API
 - [ ] Figure out auth with clerk
-- [ ] Add dark mode toggle
-- [ ] Implement sorting
-- [ ] Add vehicle detail pages
-- [ ] Deploy to vercel
+- [x] Add dark mode toggle
+- [x] Implement sorting
+- [x] Add vehicle detail pages
+- [x] Deploy to vercel

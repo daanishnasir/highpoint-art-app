@@ -20,6 +20,18 @@ import { type CarImage } from "~/types";
 import BidComponent from "./BidComponent";
 import { useRouter } from "next/navigation";
 import { useLocalStorage } from "usehooks-ts";
+import {
+  DialogActionTrigger,
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import { Button } from "~/components/ui/button";
 
 const tabData = [
   { value: "all-listings", label: "All listings", isFirst: true },
@@ -523,28 +535,70 @@ const SearchCars = () => {
         </Tabs.Root>
 
         <Box display="flex" alignItems="center" gap={4}>
-          <Box
-            as="button"
-            bg="linear-gradient(135deg, #FFD700, #FFC700)"
-            color="black"
-            py={2}
-            px={4}
-            borderRadius="md"
-            border="2px solid #FFD700"
-            boxShadow="0 4px 8px rgba(0, 0, 0, 0.2)"
-            _hover={{
-              bg: "linear-gradient(135deg, #FFC700, #FFB700)",
-              boxShadow: "0 6px 12px rgba(0, 0, 0, 0.3)",
-              transform: "scale(1.05)",
-            }}
-            fontWeight="bold"
-            fontSize="lg"
-            onClick={() => {
-              console.log("Bid All clicked");
-            }}
-          >
-            Bid All
-          </Box>
+          {images.length > 0 && (
+            <DialogRoot>
+              <DialogTrigger asChild>
+                <Box
+                  as="button"
+                  bg="linear-gradient(135deg, #FFD700, #FFC700)"
+                  color="black"
+                  py={2}
+                  px={4}
+                  borderRadius="md"
+                  border="2px solid #FFD700"
+                  boxShadow="0 4px 8px rgba(0, 0, 0, 0.2)"
+                  _hover={{
+                    bg: "linear-gradient(135deg, #FFC700, #FFB700)",
+                    boxShadow: "0 6px 12px rgba(0, 0, 0, 0.3)",
+                    transform: "scale(1.05)",
+                  }}
+                  fontWeight="bold"
+                  fontSize="lg"
+                >
+                  Bid All
+                </Box>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle fontSize="2xl" fontWeight="bold">
+                    Bid on EVERYTHING.{" "}
+                  </DialogTitle>
+                </DialogHeader>
+                <DialogBody>
+                  <p>
+                    Are you sure you want to do this? Are you Jay Leno? This is
+                    kind of crazy.
+                  </p>
+                </DialogBody>
+                <DialogFooter display="flex" justifyContent="flex-end" gap={2}>
+                  <DialogActionTrigger asChild>
+                    <Box
+                      as="button"
+                      border="1px solid"
+                      borderColor="gray.300"
+                      borderRadius="md"
+                      px={4}
+                      py={2}
+                      _hover={{ bg: "gray.100" }}
+                    >
+                      Cancel
+                    </Box>
+                  </DialogActionTrigger>
+                  <Box
+                    as="button"
+                    bg="red.500"
+                    color="white"
+                    borderRadius="md"
+                    px={4}
+                    py={2}
+                    _hover={{ bg: "red.600" }}
+                  >
+                    Do it.
+                  </Box>
+                </DialogFooter>
+              </DialogContent>
+            </DialogRoot>
+          )}
 
           <Box position="relative" width={{ base: "100%", md: "200px" }}>
             <SelectRoot
