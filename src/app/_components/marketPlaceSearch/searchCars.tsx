@@ -427,7 +427,6 @@ const SearchCars = () => {
             outline: "none",
             border: "none",
           }}
-          bg="transparent"
           fontSize="xl"
           pl={3}
           w="full"
@@ -486,7 +485,7 @@ const SearchCars = () => {
               gap={1}
             >
               <Box display="flex" alignItems="center" gap={1}>
-                <Box as="span" color="gray.600">
+                <Box as="span" color={isDarkMode ? "blue.400" : "gray.600"}>
                   Sort by:
                 </Box>
                 <SelectValueText placeholder="Recommended" />
@@ -511,6 +510,7 @@ const SearchCars = () => {
                   key={option.value}
                   px={4}
                   py={2}
+                  color={isDarkMode ? "white" : "black"}
                   _hover={{ bg: "gray.100" }}
                 >
                   {option.label}
