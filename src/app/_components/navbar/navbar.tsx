@@ -304,6 +304,8 @@ export const Navbar = () => {
           <a
             href="https://allup.world/user:5daf17bd-2da6-4a50-a3b9-bd6c41048445"
             className="text-blue-500"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             (281) 795-8682
           </a>
