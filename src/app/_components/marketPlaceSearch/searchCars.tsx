@@ -522,53 +522,80 @@ const SearchCars = () => {
           </Tabs.List>
         </Tabs.Root>
 
-        <Box position="relative" width={{ base: "100%", md: "200px" }}>
-          <SelectRoot
-            collection={sortOptions}
-            width="100%"
-            value={sortValue}
-            onValueChange={(e) => setSortValue(e.value)}
+        <Box display="flex" alignItems="center" gap={4}>
+          <Box
+            as="button"
+            bg="linear-gradient(135deg, #FFD700, #FFC700)"
+            color="black"
+            py={2}
+            px={4}
+            borderRadius="md"
+            border="2px solid #FFD700"
+            boxShadow="0 4px 8px rgba(0, 0, 0, 0.2)"
+            _hover={{
+              bg: "linear-gradient(135deg, #FFC700, #FFB700)",
+              boxShadow: "0 6px 12px rgba(0, 0, 0, 0.3)",
+              transform: "scale(1.05)",
+            }}
+            fontWeight="bold"
+            fontSize="lg"
+            onClick={() => {
+              console.log("Bid All clicked");
+            }}
           >
-            <SelectTrigger
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-              gap={1}
+            Bid All
+          </Box>
+
+          <Box position="relative" width={{ base: "100%", md: "200px" }}>
+            <SelectRoot
+              collection={sortOptions}
+              width="100%"
+              value={sortValue}
+              onValueChange={(e) => setSortValue(e.value)}
             >
-              <Box display="flex" alignItems="center" gap={1}>
-                <Box as="span" color={isDarkMode ? "blue.400" : "gray.600"}>
-                  Sort by:
+              <SelectTrigger
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                gap={1}
+              >
+                <Box display="flex" alignItems="center" gap={1}>
+                  <Box as="span" color={isDarkMode ? "blue.400" : "gray.600"}>
+                    Sort by:
+                  </Box>
+                  <SelectValueText placeholder="Recommended" />
                 </Box>
-                <SelectValueText placeholder="Recommended" />
-              </Box>
-              <CaretDownOutlined style={{ fontSize: "12px", color: "#666" }} />
-            </SelectTrigger>
-            <SelectContent
-              position="absolute"
-              zIndex={1000}
-              bg="white"
-              boxShadow="lg"
-              borderRadius="md"
-              mt={1}
-              top="100%"
-              right={0}
-              minWidth="200px"
-              py={2}
-            >
-              {sortOptions.items.map((option) => (
-                <SelectItem
-                  item={option}
-                  key={option.value}
-                  px={4}
-                  py={2}
-                  color={isDarkMode ? "white" : "black"}
-                  _hover={{ bg: "gray.100" }}
-                >
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </SelectRoot>
+                <CaretDownOutlined
+                  style={{ fontSize: "12px", color: "#666" }}
+                />
+              </SelectTrigger>
+              <SelectContent
+                position="absolute"
+                zIndex={1000}
+                bg="white"
+                boxShadow="lg"
+                borderRadius="md"
+                mt={1}
+                top="100%"
+                right={0}
+                minWidth="200px"
+                py={2}
+              >
+                {sortOptions.items.map((option) => (
+                  <SelectItem
+                    item={option}
+                    key={option.value}
+                    px={4}
+                    py={2}
+                    color={isDarkMode ? "white" : "black"}
+                    _hover={{ bg: "gray.100" }}
+                  >
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </SelectRoot>
+          </Box>
         </Box>
       </Box>
 

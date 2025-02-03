@@ -272,6 +272,11 @@ export const Navbar = () => {
               key={item}
               className="group relative cursor-pointer"
               onMouseEnter={() => handleMouseEnter(item)}
+              onClick={() => {
+                if (item === "Marketplace") {
+                  window.location.href = "/";
+                }
+              }}
             >
               <span className="relative pb-2">
                 {item}
