@@ -175,6 +175,10 @@ export const Navbar = () => {
       <div className="flex h-16 items-center justify-between border-b border-gray-300 bg-white px-4 md:px-8">
         <div
           className="text-xl font-bold md:text-2xl"
+          onClick={() => {
+            console.log("clicked");
+            window.location.reload();
+          }}
           style={{
             fontFamily: 'HelveticaNeue, system-ui, -apple-system, "Segoe UI"',
           }}
