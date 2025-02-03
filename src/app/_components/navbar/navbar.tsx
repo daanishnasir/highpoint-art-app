@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState, type CSSProperties } from "react";
+import * as React from "react";
+import { useState, type CSSProperties } from "react";
 import { MenuOutlined } from "@ant-design/icons";
+import { Switch } from "~/components/ui/switch";
 import styles from "./navbar.module.css";
 import { menuItems } from "./menuItems";
 
@@ -199,6 +201,7 @@ export const Navbar = () => {
           ))}
         </div>
         <div className="flex items-center gap-6">
+          <Switch className="hidden md:flex" />
           <div className="hidden cursor-pointer rounded-md border border-black px-4 py-2 transition-colors duration-300 hover:bg-gray-200 md:block">
             Log in
           </div>
