@@ -44,10 +44,12 @@ const CarCard = ({
   image,
   index,
   onClick,
+  isDarkMode,
 }: {
   image: CarImage;
   index: number;
   onClick: () => void;
+  isDarkMode: boolean;
 }) => {
   const endTime = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
@@ -97,13 +99,14 @@ const CarCard = ({
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
+              color: isDarkMode ? "white" : "black",
             }}
           >
             {image.description || "Vehicle"}
           </h3>
           <p
             style={{
-              color: "#666",
+              color: isDarkMode ? "white" : "black",
               fontSize: "0.9rem",
               overflow: "hidden",
               textOverflow: "ellipsis",
@@ -123,16 +126,18 @@ const CarCard = ({
   );
 };
 
-const CarDetailPanel = ({
+const SidePanel = ({
   image,
   isOpen,
   onClose,
   index,
+  isDarkMode,
 }: {
   image: CarImage | null;
   isOpen: boolean;
   onClose: () => void;
   index: number;
+  isDarkMode: boolean;
 }) => {
   const router = useRouter();
 
@@ -181,6 +186,8 @@ const CarDetailPanel = ({
                 p={2}
                 _hover={{ bg: "gray.100" }}
                 borderRadius="md"
+                color={isDarkMode ? "white" : "black"}
+                fontSize="24px"
               >
                 ✕
               </Box>
@@ -196,13 +203,22 @@ const CarDetailPanel = ({
               }}
             />
             <Box mt={4}>
-              <Text fontSize="2xl" fontWeight="bold">
+              <Text
+                fontSize="2xl"
+                fontWeight="bold"
+                color={isDarkMode ? "white" : "black"}
+              >
                 {image.description || "Vehicle"}
               </Text>
-              <Text mt={2} color="gray.600">
+              <Text mt={2} color={isDarkMode ? "white" : "black"}>
                 Location: {image.user.location || "Unknown"}
               </Text>
-              <Text mt={2} fontSize="xl" fontWeight="bold">
+              <Text
+                mt={2}
+                fontSize="xl"
+                fontWeight="bold"
+                color={isDarkMode ? "white" : "black"}
+              >
                 ${image.price?.toLocaleString() ?? "Unknown"}
               </Text>
 
@@ -260,56 +276,92 @@ const CarDetailPanel = ({
               </Box>
 
               <Box mt={6}>
-                <Text fontSize="xl" fontWeight="bold">
+                <Text
+                  fontSize="xl"
+                  fontWeight="bold"
+                  color={isDarkMode ? "white" : "black"}
+                >
                   Paint and exterior
                 </Text>
-                <Text mt={1}>
+                <Text mt={1} color={isDarkMode ? "white" : "black"}>
                   Shows in good condition but could use refinishing
                 </Text>
 
-                <Text fontSize="xl" fontWeight="bold" mt={4}>
+                <Text
+                  fontSize="xl"
+                  fontWeight="bold"
+                  mt={4}
+                  color={isDarkMode ? "white" : "black"}
+                >
                   Upholstery and interior
                 </Text>
-                <Text mt={1}>
+                <Text mt={1} color={isDarkMode ? "white" : "black"}>
                   Shows in great condition with no strange odors, rips, or
                   stains.
                 </Text>
 
-                <Text fontSize="xl" fontWeight="bold" mt={4}>
+                <Text
+                  fontSize="xl"
+                  fontWeight="bold"
+                  mt={4}
+                  color={isDarkMode ? "white" : "black"}
+                >
                   Mileage
                 </Text>
-                <Text mt={1}>
+                <Text mt={1} color={isDarkMode ? "white" : "black"}>
                   Being a 1-Owner car, it was driven much more frequently at
                   first but, through the years, became more of a weekend/road
                   trip car.
                 </Text>
 
-                <Text fontSize="xl" fontWeight="bold" mt={4}>
+                <Text
+                  fontSize="xl"
+                  fontWeight="bold"
+                  mt={4}
+                  color={isDarkMode ? "white" : "black"}
+                >
                   Wheels and tires
                 </Text>
-                <Text mt={1}>
+                <Text mt={1} color={isDarkMode ? "white" : "black"}>
                   Factory wheels wrapped in Hancock tires [P185/75R14]
                 </Text>
 
-                <Text fontSize="xl" fontWeight="bold" mt={4}>
+                <Text
+                  fontSize="xl"
+                  fontWeight="bold"
+                  mt={4}
+                  color={isDarkMode ? "white" : "black"}
+                >
                   Brakes
                 </Text>
-                <Text mt={1}>
+                <Text mt={1} color={isDarkMode ? "white" : "black"}>
                   Factory brakes. They work as intended but could use a refresh.
                 </Text>
 
-                <Text fontSize="xl" fontWeight="bold" mt={4}>
+                <Text
+                  fontSize="xl"
+                  fontWeight="bold"
+                  mt={4}
+                  color={isDarkMode ? "white" : "black"}
+                >
                   Transmission
                 </Text>
-                <Text mt={1}>
+                <Text mt={1} color={isDarkMode ? "white" : "black"}>
                   Factory transmission. Works as intended [rebuilt in approx.
                   2015]
                 </Text>
 
-                <Text fontSize="xl" fontWeight="bold" mt={4}>
+                <Text
+                  fontSize="xl"
+                  fontWeight="bold"
+                  mt={4}
+                  color={isDarkMode ? "white" : "black"}
+                >
                   Warranty
                 </Text>
-                <Text mt={1}>No</Text>
+                <Text mt={1} color={isDarkMode ? "white" : "black"}>
+                  No
+                </Text>
               </Box>
             </Box>
           </>
@@ -534,16 +586,18 @@ const SearchCars = () => {
               image={image}
               index={index}
               onClick={() => handleCardClick(image, index)}
+              isDarkMode={isDarkMode}
             />
           </div>
         ))}
       </div>
 
-      <CarDetailPanel
+      <SidePanel
         image={selectedCar}
         isOpen={isPanelOpen}
         onClose={() => setIsPanelOpen(false)}
         index={selectedIndex}
+        isDarkMode={isDarkMode}
       />
     </Box>
   );
