@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { type CarImage } from "~/types";
 import BidComponent from "./BidComponent";
+import { useRouter } from "next/navigation";
 
 const tabData = [
   { value: "all-listings", label: "All listings", isFirst: true },
@@ -132,6 +133,8 @@ const CarDetailPanel = ({
   onClose: () => void;
   index: number;
 }) => {
+  const router = useRouter();
+
   return (
     <>
       <motion.div
@@ -248,6 +251,9 @@ const CarDetailPanel = ({
                 border="2px solid #0088CC"
                 _hover={{ bg: "rgba(0, 136, 204, 0.1)" }}
                 fontWeight="bold"
+                onClick={() => {
+                  router.push(`/auction/${image?.id}`);
+                }}
               >
                 More Details
               </Box>
