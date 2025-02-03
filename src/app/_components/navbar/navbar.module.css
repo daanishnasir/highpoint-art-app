@@ -1,0 +1,66 @@
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animateFadeIn {
+  animation: fadeIn 1s ease-in-out;
+}
+
+.NavColMenu {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.underlineHover {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  font-size: 14px;
+  --underline-color: black;
+}
+
+.underlineHover::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(
+    --underline-color
+  ); /* for edge nav items that need blue underline */
+  transform: scaleX(0);
+}
+
+.underlineHover:hover::after {
+  transform: scaleX(1);
+  transition: none;
+}
+
+.blueHover {
+  color: black;
+  transition: color 0.3s;
+  position: relative;
+}
+
+.blueHover:hover {
+  color: #1e90ff;
+}
+
+.blueHover::after {
+  content: "→";
+  position: absolute;
+  right: -5px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.blueHover:hover::after {
+  opacity: 1;
+}
