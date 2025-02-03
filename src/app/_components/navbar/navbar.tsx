@@ -174,9 +174,8 @@ export const Navbar = () => {
     <div className="flex flex-col" onMouseLeave={handleMouseLeave}>
       <div className="flex h-16 items-center justify-between border-b border-gray-300 bg-white px-4 md:px-8">
         <div
-          className="text-xl font-bold md:text-2xl"
+          className="cursor-pointer text-xl font-bold md:text-2xl"
           onClick={() => {
-            console.log("clicked");
             window.location.reload();
           }}
           style={{
