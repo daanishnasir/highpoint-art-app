@@ -50,7 +50,7 @@
 }
 
 .blueHover:hover {
-  color: #1e90ff;
+  color: #1e90ff !important;
 }
 
 .blueHover::after {

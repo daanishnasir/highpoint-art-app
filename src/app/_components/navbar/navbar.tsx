@@ -25,41 +25,48 @@ const NavColMenu = ({ title, items }: { title: string; items: string[] }) => (
   </div>
 );
 
-const MarketplaceMenu = () => (
-  <div className="animateFadeIn hidden justify-center p-4 pb-8 md:flex">
-    <div className="grid grid-cols-3 gap-12">
-      <div className={styles.NavColMenu}>
-        <h3 className="pb-2 font-semibold text-gray-500">Explore</h3>
-        <ul className="list-none">
-          {["Auctions", "Classifieds", "Sell a car"].map((item) => (
-            <li
-              key={item}
-              className={`text-2xl font-bold ${styles.blueHover} relative cursor-pointer pb-4`}
-            >
-              {item}
-            </li>
-          ))}
-          <li>
-            <a
-              href="#"
-              className={`pt-4 text-sm font-bold text-blue-500 ${styles.underlineHover}`}
-              style={{ "--underline-color": "#1e90ff" } as CustomCSSProperties}
-            >
-              Marketplace home
-            </a>
-          </li>
-        </ul>
-      </div>
-      <NavColMenu title="Engage" items={menuItems.engage} />
-      <NavColMenu
-        title="More from Marketplace"
-        items={menuItems.moreFromMarketplace}
-      />
-    </div>
-  </div>
-);
+const MarketplaceMenu = ({ isDarkMode }: { isDarkMode: boolean }) => {
+  console.log("isDarkMode:", isDarkMode);
 
-const InsuranceMenu = () => (
+  return (
+    <div className="animateFadeIn hidden justify-center p-4 pb-8 md:flex">
+      <div className="grid grid-cols-3 gap-12">
+        <div className={styles.NavColMenu}>
+          <h3 className="pb-2 font-semibold text-gray-500">Explore</h3>
+          <ul className="list-none">
+            {["Auctions", "Classifieds", "Sell a car"].map((item) => (
+              <li
+                key={item}
+                className={`text-2xl font-bold ${styles.blueHover} relative cursor-pointer pb-4`}
+                {...(isDarkMode && { style: { color: "white" } })}
+              >
+                {item}
+              </li>
+            ))}
+            <li>
+              <a
+                href="#"
+                className={`pt-4 text-sm font-bold text-blue-500 ${styles.underlineHover}`}
+                style={
+                  { "--underline-color": "#1e90ff" } as CustomCSSProperties
+                }
+              >
+                Marketplace home
+              </a>
+            </li>
+          </ul>
+        </div>
+        <NavColMenu title="Engage" items={menuItems.engage} />
+        <NavColMenu
+          title="More from Marketplace"
+          items={menuItems.moreFromMarketplace}
+        />
+      </div>
+    </div>
+  );
+};
+
+const InsuranceMenu = ({ isDarkMode }: { isDarkMode: boolean }) => (
   <div className="animateFadeIn hidden justify-center p-4 pb-8 md:flex">
     <div className="grid grid-cols-5 gap-12">
       <div className={styles.NavColMenu}>
@@ -67,6 +74,7 @@ const InsuranceMenu = () => (
         <ul className="list-none">
           <li
             className={`text-2xl font-bold ${styles.blueHover} relative cursor-pointer pb-4`}
+            {...(isDarkMode && { style: { color: "white" } })}
           >
             Get a quote
           </li>
@@ -95,7 +103,7 @@ const InsuranceMenu = () => (
   </div>
 );
 
-const MediaMenu = () => (
+const MediaMenu = ({ isDarkMode }: { isDarkMode: boolean }) => (
   <div className="animateFadeIn hidden justify-center p-4 pb-8 md:flex">
     <div className="grid grid-cols-5 gap-12">
       <div className={styles.NavColMenu}>
@@ -105,6 +113,7 @@ const MediaMenu = () => (
             <li
               key={item}
               className={`text-2xl font-bold ${styles.blueHover} relative cursor-pointer pb-4`}
+              {...(isDarkMode && { style: { color: "white" } })}
             >
               {item}
             </li>
@@ -131,7 +140,7 @@ const MediaMenu = () => (
   </div>
 );
 
-const DriversClubMenu = () => (
+const DriversClubMenu = ({ isDarkMode }: { isDarkMode: boolean }) => (
   <div className="animateFadeIn hidden justify-center p-4 pb-8 md:flex">
     <div className="grid grid-cols-3 gap-16">
       <div className={`${styles.NavColMenu} mr-8`}>
@@ -140,7 +149,8 @@ const DriversClubMenu = () => (
           {["Explore Club", "Valuation", "Ask Us"].map((item) => (
             <li
               key={item}
-              className={`text-2xl font-bold ${styles.blueHover} relative cursor-pointer pb-4`}
+              className={`text-2xl font-bold ${styles.blueHover} relative w-[120%] cursor-pointer pb-4`}
+              {...(isDarkMode && { style: { color: "white" } })}
             >
               {item}
             </li>
@@ -255,10 +265,16 @@ export const Navbar = () => {
         } md:max-h-full`}
         onMouseEnter={() => setActiveMenu(activeMenu)}
       >
-        {activeMenu === "Marketplace" && <MarketplaceMenu />}
-        {activeMenu === "Insurance" && <InsuranceMenu />}
-        {activeMenu === "Media" && <MediaMenu />}
-        {activeMenu === "Drivers Club" && <DriversClubMenu />}
+        {activeMenu === "Marketplace" && (
+          <MarketplaceMenu isDarkMode={isDarkMode} />
+        )}
+        {activeMenu === "Insurance" && (
+          <InsuranceMenu isDarkMode={isDarkMode} />
+        )}
+        {activeMenu === "Media" && <MediaMenu isDarkMode={isDarkMode} />}
+        {activeMenu === "Drivers Club" && (
+          <DriversClubMenu isDarkMode={isDarkMode} />
+        )}
       </div>
     </div>
   );
