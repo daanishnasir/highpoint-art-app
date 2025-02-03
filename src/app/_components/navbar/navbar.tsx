@@ -176,7 +176,7 @@ export const Navbar = () => {
         <div
           className="cursor-pointer text-xl font-bold md:text-2xl"
           onClick={() => {
-            window.location.reload();
+            window.location.href = "/";
           }}
           style={{
             fontFamily: 'HelveticaNeue, system-ui, -apple-system, "Segoe UI"',
