@@ -20,6 +20,7 @@ export interface CarListing {
 export interface CarImage {
   id: string;
   alt_description: string;
+  originalIndex: number;
   urls: {
     full: string;
     raw: string;

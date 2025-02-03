@@ -31,7 +31,6 @@ const sortOptions = createListCollection({
     { label: "Newly listed", value: "newly-listed" },
     { label: "Least expensive", value: "least-expensive" },
     { label: "Most expensive", value: "most-expensive" },
-    { label: "Lowest mileage", value: "lowest-mileage" },
   ],
 });
 
@@ -49,8 +48,6 @@ const CarCard = ({
   index: number;
   onClick: () => void;
 }) => {
-  const price = SAMPLE_PRICES[index % SAMPLE_PRICES.length];
-
   return (
     <motion.div
       whileHover={{
@@ -97,7 +94,7 @@ const CarCard = ({
             marginTop: "0.5rem",
           }}
         >
-          ${price?.toLocaleString() ?? "Unknown"}
+          ${image.price?.toLocaleString() ?? "Unknown"}
         </p>
       </div>
     </motion.div>
@@ -115,8 +112,6 @@ const CarDetailPanel = ({
   onClose: () => void;
   index: number;
 }) => {
-  const price = SAMPLE_PRICES[index % SAMPLE_PRICES.length];
-
   return (
     <>
       <motion.div
@@ -184,7 +179,7 @@ const CarDetailPanel = ({
                 Location: {image.user.location || "Unknown"}
               </Text>
               <Text mt={2} fontSize="xl" fontWeight="bold">
-                ${price?.toLocaleString() ?? "Unknown"}
+                ${image.price?.toLocaleString() ?? "Unknown"}
               </Text>
 
               <Box
@@ -307,7 +302,13 @@ const SearchCars = () => {
       `https://api.unsplash.com/search/photos?query=${searchValue}&client_id=${process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY}`,
     );
     const data = (await response.json()) as { results: CarImage[] };
-    setImages(data.results);
+    setImages(
+      data.results.map((img, index) => ({
+        ...img,
+        originalIndex: index,
+        price: SAMPLE_PRICES[index % SAMPLE_PRICES.length], // NOTE: will loop back if needed
+      })),
+    );
   };
 
   const useDebounce = (value: string, delay: number) => {
@@ -327,6 +328,21 @@ const SearchCars = () => {
     setSelectedCar(image);
     setSelectedIndex(index);
     setIsPanelOpen(true);
+  };
+
+  const getSortedImages = () => {
+    if (!sortValue.length) return images;
+
+    return [...images].sort((a, b) => {
+      switch (sortValue[0]) {
+        case "most-expensive":
+          return (b.price ?? 0) - (a.price ?? 0);
+        case "least-expensive":
+          return (a.price ?? 0) - (b.price ?? 0);
+        default:
+          return 0;
+      }
+    });
   };
 
   return (
@@ -456,7 +472,7 @@ const SearchCars = () => {
           padding: "2rem 0",
         }}
       >
-        {images.map((image: CarImage, index: number) => (
+        {getSortedImages().map((image: CarImage, index: number) => (
           <div key={image.id}>
             <CarCard
               image={image}
