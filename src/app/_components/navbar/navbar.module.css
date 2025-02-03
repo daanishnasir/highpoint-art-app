@@ -34,7 +34,7 @@
   height: 2px;
   background-color: var(
     --underline-color
-  ); /* for edge nav items that need blue underline */
+  ); /* for edge cases where nav items need blue underline */
   transform: scaleX(0);
 }
 

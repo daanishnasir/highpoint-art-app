@@ -12,13 +12,28 @@ interface CustomCSSProperties extends CSSProperties {
   "--underline-color"?: string;
 }
 
-const NavColMenu = ({ title, items }: { title: string; items: string[] }) => (
+const NavColMenu = ({
+  title,
+  items,
+  isDarkMode,
+}: {
+  title: string;
+  items: string[];
+  isDarkMode: boolean;
+}) => (
   <div className={styles.NavColMenu}>
     <h3 className="pb-2 font-semibold text-gray-500">{title}</h3>
     <ul className="list-none">
       {items.map((item) => (
         <li key={item} className="pb-2 font-bold">
-          <span className={styles.underlineHover}>{item}</span>
+          <span
+            className={styles.underlineHover}
+            {...(isDarkMode && {
+              style: { "--underline-color": "white" } as CustomCSSProperties,
+            })}
+          >
+            {item}
+          </span>
         </li>
       ))}
     </ul>
@@ -56,10 +71,15 @@ const MarketplaceMenu = ({ isDarkMode }: { isDarkMode: boolean }) => {
             </li>
           </ul>
         </div>
-        <NavColMenu title="Engage" items={menuItems.engage} />
+        <NavColMenu
+          title="Engage"
+          items={menuItems.engage}
+          isDarkMode={isDarkMode}
+        />
         <NavColMenu
           title="More from Marketplace"
           items={menuItems.moreFromMarketplace}
+          isDarkMode={isDarkMode}
         />
       </div>
     </div>
@@ -92,13 +112,23 @@ const InsuranceMenu = ({ isDarkMode }: { isDarkMode: boolean }) => (
       <NavColMenu
         title="Insurance products"
         items={menuItems.insuranceProducts}
+        isDarkMode={isDarkMode}
       />
       <NavColMenu
         title="More from Insurance"
         items={menuItems.moreFromInsurance}
+        isDarkMode={isDarkMode}
       />
-      <NavColMenu title="Policyholders" items={menuItems.policyholders} />
-      <NavColMenu title="Claims" items={menuItems.claims} />
+      <NavColMenu
+        title="Policyholders"
+        items={menuItems.policyholders}
+        isDarkMode={isDarkMode}
+      />
+      <NavColMenu
+        title="Claims"
+        items={menuItems.claims}
+        isDarkMode={isDarkMode}
+      />
     </div>
   </div>
 );
@@ -132,10 +162,23 @@ const MediaMenu = ({ isDarkMode }: { isDarkMode: boolean }) => (
       <NavColMenu
         title="Hagerty Originals"
         items={menuItems.hagertyOriginals}
+        isDarkMode={isDarkMode}
       />
-      <NavColMenu title="Categories" items={menuItems.categories} />
-      <NavColMenu title="Popular vehicles" items={menuItems.popularVehicles} />
-      <NavColMenu title="More from Media" items={menuItems.moreFromMedia} />
+      <NavColMenu
+        title="Categories"
+        items={menuItems.categories}
+        isDarkMode={isDarkMode}
+      />
+      <NavColMenu
+        title="Popular vehicles"
+        items={menuItems.popularVehicles}
+        isDarkMode={isDarkMode}
+      />
+      <NavColMenu
+        title="More from Media"
+        items={menuItems.moreFromMedia}
+        isDarkMode={isDarkMode}
+      />
     </div>
   </div>
 );
@@ -166,8 +209,16 @@ const DriversClubMenu = ({ isDarkMode }: { isDarkMode: boolean }) => (
           </li>
         </ul>
       </div>
-      <NavColMenu title="Explore" items={menuItems.explore} />
-      <NavColMenu title="Roadside" items={menuItems.roadside} />
+      <NavColMenu
+        title="Explore"
+        items={menuItems.explore}
+        isDarkMode={isDarkMode}
+      />
+      <NavColMenu
+        title="Roadside"
+        items={menuItems.roadside}
+        isDarkMode={isDarkMode}
+      />
     </div>
   </div>
 );
