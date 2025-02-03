@@ -19,7 +19,7 @@ import { motion } from "framer-motion";
 import { type CarImage } from "~/types";
 import BidComponent from "./BidComponent";
 import { useRouter } from "next/navigation";
-import { useLocalStorage } from "@uidotdev/usehooks";
+import { useLocalStorage } from "usehooks-ts";
 
 const tabData = [
   { value: "all-listings", label: "All listings", isFirst: true },
@@ -320,10 +320,9 @@ const CarDetailPanel = ({
 };
 
 const SearchCars = () => {
-  const [isDarkMode, setIsDarkMode] = useLocalStorage<boolean>(
-    "hagerty-dark-mode",
-    false,
-  );
+  const [isDarkMode] = useLocalStorage<boolean>("hagerty-dark-mode", false, {
+    initializeWithValue: false,
+  });
   const [tab, setTab] = useState<string | null>("all-listings");
   const [sortValue, setSortValue] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");

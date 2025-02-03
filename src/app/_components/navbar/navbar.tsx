@@ -5,7 +5,7 @@ import { useState, type CSSProperties, useEffect } from "react";
 import { MenuOutlined } from "@ant-design/icons";
 import { Switch } from "~/components/ui/switch";
 import styles from "./navbar.module.css";
-import { useLocalStorage } from "@uidotdev/usehooks";
+import { useLocalStorage } from "usehooks-ts";
 import { menuItems } from "./menuItems";
 
 interface CustomCSSProperties extends CSSProperties {
@@ -228,6 +228,7 @@ export const Navbar = () => {
   const [isDarkMode, setIsDarkMode] = useLocalStorage<boolean>(
     "darkMode",
     false,
+    { initializeWithValue: false },
   );
 
   const handleMouseEnter = (menu: string) => {
