@@ -206,6 +206,25 @@ const CarDetailPanel = ({
                 as="button"
                 mt={4}
                 w="full"
+                bg={index === 0 || index === 1 ? "#C41E3A" : "#E2E8F0"}
+                color={index === 0 || index === 1 ? "white" : "gray.600"}
+                py={3}
+                px={4}
+                borderRadius="full"
+                border="1px solid"
+                borderColor={index === 0 || index === 1 ? "#C41E3A" : "#94A3B8"}
+                _hover={{
+                  bg: index === 0 || index === 1 ? "#A01830" : "#CBD5E0",
+                }}
+                fontWeight="bold"
+              >
+                Place Bid
+              </Box>
+
+              <Box
+                as="button"
+                mt={4}
+                w="full"
                 bg="#0088CC"
                 color="white"
                 py={3}
