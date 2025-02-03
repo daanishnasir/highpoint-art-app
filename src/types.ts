@@ -21,6 +21,8 @@ export interface CarImage {
   id: string;
   alt_description: string;
   originalIndex: number;
+  price: number;
+  bidEndTime?: string;
   urls: {
     full: string;
     raw: string;

@@ -28,8 +28,6 @@ const tabData = [
 const sortOptions = createListCollection({
   items: [
     { label: "Recommended", value: "recommended" },
-    { label: "Ending soon", value: "ending-soon" },
-    { label: "Newly listed", value: "newly-listed" },
     { label: "Least expensive", value: "least-expensive" },
     { label: "Most expensive", value: "most-expensive" },
   ],
@@ -49,7 +47,6 @@ const CarCard = ({
   index: number;
   onClick: () => void;
 }) => {
-  // Add 24 hours to current time for demo purposes
   const endTime = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
   return (
@@ -65,6 +62,9 @@ const CarCard = ({
         backgroundColor: "white",
         boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
         cursor: "pointer",
+        height: "360px",
+        display: "flex",
+        flexDirection: "column",
       }}
       onClick={onClick}
     >
@@ -77,23 +77,46 @@ const CarCard = ({
           objectFit: "cover",
         }}
       />
-      <div style={{ padding: "1rem" }}>
-        <h3
-          style={{
-            fontSize: "1.1rem",
-            fontWeight: "bold",
-            marginBottom: "0.5rem",
-          }}
-        >
-          {image.description || "Vehicle"}
-        </h3>
-        <p style={{ color: "#666", fontSize: "0.9rem" }}>
-          Location: {image.user.location || "Unknown"}
-        </p>
+      <div
+        style={{
+          padding: "12px 16px",
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}
+      >
+        <div>
+          <h3
+            style={{
+              fontSize: "1.1rem",
+              fontWeight: "bold",
+              marginBottom: "4px",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {image.description || "Vehicle"}
+          </h3>
+          <p
+            style={{
+              color: "#666",
+              fontSize: "0.9rem",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Location: {image.user.location || "Unknown"}
+          </p>
+        </div>
       </div>
-      {(index === 0 || index === 1) && (
-        <BidComponent currentBid={image.price ?? 0} endTime={endTime} />
-      )}
+      <BidComponent
+        currentBid={image.price}
+        endTime={endTime}
+        isAuction={index === 0 || index === 1}
+      />
     </motion.div>
   );
 };
