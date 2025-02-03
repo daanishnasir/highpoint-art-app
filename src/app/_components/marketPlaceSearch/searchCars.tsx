@@ -19,6 +19,7 @@ import { motion } from "framer-motion";
 import { type CarImage } from "~/types";
 import BidComponent from "./BidComponent";
 import { useRouter } from "next/navigation";
+import { useLocalStorage } from "@uidotdev/usehooks";
 
 const tabData = [
   { value: "all-listings", label: "All listings", isFirst: true },
@@ -319,6 +320,10 @@ const CarDetailPanel = ({
 };
 
 const SearchCars = () => {
+  const [isDarkMode, setIsDarkMode] = useLocalStorage<boolean>(
+    "hagerty-dark-mode",
+    false,
+  );
   const [tab, setTab] = useState<string | null>("all-listings");
   const [sortValue, setSortValue] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");
@@ -396,7 +401,7 @@ const SearchCars = () => {
         position="relative"
         w="full"
         mb={4}
-        bg="#f4f6f8"
+        bg={isDarkMode ? "#333" : "#f4f6f8"}
         border="1px solid"
         borderColor="gray.200"
         borderRadius="full"
@@ -406,13 +411,17 @@ const SearchCars = () => {
         py={4}
       >
         <SearchOutlined
-          style={{ color: "black", fontSize: "32px", paddingLeft: "2rem" }}
+          style={{
+            color: isDarkMode ? "white" : "black",
+            fontSize: "32px",
+            paddingLeft: "2rem",
+          }}
         />
         <Input
           type="text"
           placeholder="Search vehicle make and hit enter"
           border="none"
-          _placeholder={{ color: "gray.500" }}
+          _placeholder={{ color: isDarkMode ? "gray.400" : "gray.500" }}
           _focus={{
             boxShadow: "none",
             outline: "none",
@@ -429,6 +438,9 @@ const SearchCars = () => {
             if (e.key === "Enter") {
               await fetchImages();
             }
+          }}
+          style={{
+            color: isDarkMode ? "white" : "black",
           }}
         />
       </Box>

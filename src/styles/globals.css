@@ -1,3 +1,31 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom global styles */
+body {
+  @apply bg-white text-black;
+}
+
+/* Dark mode styles */
+.dark body {
+  @apply bg-gray-900 text-white;
+}
+
+/* Navbar styles */
+.navbar {
+  @apply bg-white text-black;
+}
+
+.dark .navbar {
+  @apply bg-gray-800 text-white;
+}
+
+/* Input styles */
+input {
+  @apply bg-gray-100 text-black;
+}
+
+.dark input {
+  @apply bg-gray-700 text-white;
+}

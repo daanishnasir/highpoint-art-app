@@ -1,10 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { useState, type CSSProperties } from "react";
+import { useState, type CSSProperties, useEffect } from "react";
 import { MenuOutlined } from "@ant-design/icons";
 import { Switch } from "~/components/ui/switch";
 import styles from "./navbar.module.css";
+import { useLocalStorage } from "@uidotdev/usehooks";
 import { menuItems } from "./menuItems";
 
 interface CustomCSSProperties extends CSSProperties {
@@ -163,6 +164,10 @@ const DriversClubMenu = () => (
 
 export const Navbar = () => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [isDarkMode, setIsDarkMode] = useLocalStorage<boolean>(
+    "darkMode",
+    false,
+  );
 
   const handleMouseEnter = (menu: string) => {
     setActiveMenu(menu);
@@ -172,9 +177,22 @@ export const Navbar = () => {
     setActiveMenu(null);
   };
 
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDarkMode]);
+
   return (
-    <div className="flex flex-col" onMouseLeave={handleMouseLeave}>
-      <div className="flex h-16 items-center justify-between border-b border-gray-300 bg-white px-4 md:px-8">
+    <div
+      className={`flex flex-col ${isDarkMode ? "bg-black text-white" : "bg-white text-black"}`}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div
+        className={`flex h-16 items-center justify-between border-b ${isDarkMode ? "border-gray-700" : "border-gray-300"} px-4 md:px-8`}
+      >
         <div
           className="cursor-pointer text-xl font-bold md:text-2xl"
           onClick={() => {
@@ -195,21 +213,32 @@ export const Navbar = () => {
             >
               <span className="relative pb-2">
                 {item}
-                <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-black transition-all duration-300 group-hover:w-full"></span>
+                <span
+                  className={`absolute -bottom-1 left-0 h-0.5 w-0 ${isDarkMode ? "bg-white" : "bg-black"} transition-all duration-300 group-hover:w-full`}
+                ></span>
               </span>
             </div>
           ))}
         </div>
         <div className="flex items-center gap-6">
-          <Switch className="hidden md:flex" />
-          <div className="hidden cursor-pointer rounded-md border border-black px-4 py-2 transition-colors duration-300 hover:bg-gray-200 md:block">
+          <Switch
+            checked={isDarkMode}
+            onCheckedChange={() => setIsDarkMode(!isDarkMode)}
+          />
+          <div
+            className={`hidden cursor-pointer rounded-md border ${isDarkMode ? "border-white" : "border-black"} px-4 py-2 transition-colors duration-300 ${isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-200"} md:block`}
+          >
             Log in
           </div>
-          <MenuOutlined className="cursor-pointer text-xl" />
+          <MenuOutlined
+            className={`cursor-pointer text-xl ${isDarkMode ? "text-white" : "text-black"}`}
+          />
         </div>
       </div>
       {!activeMenu && (
-        <div className="bg-blue-100 p-4 text-center">
+        <div
+          className={`p-4 text-center ${isDarkMode ? "bg-gray-800 text-white" : "bg-blue-100 text-black"}`}
+        >
           If you need a Front End Engineer, you can call me at{" "}
           <a
             href="https://allup.world/user:5daf17bd-2da6-4a50-a3b9-bd6c41048445"
@@ -221,7 +250,7 @@ export const Navbar = () => {
         </div>
       )}
       <div
-        className={`transition-max-height overflow-hidden border-t border-gray-300 bg-white duration-300 ease-in-out ${
+        className={`transition-max-height overflow-hidden border-t ${isDarkMode ? "border-gray-700 bg-black" : "border-gray-300 bg-white"} duration-300 ease-in-out ${
           activeMenu ? "max-h-96" : "max-h-0"
         } md:max-h-full`}
         onMouseEnter={() => setActiveMenu(activeMenu)}
