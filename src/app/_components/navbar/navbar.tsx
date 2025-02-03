@@ -208,7 +208,10 @@ export const Navbar = () => {
       {!activeMenu && (
         <div className="bg-blue-100 p-4 text-center">
           If you need a Front End Engineer, you can call me at{" "}
-          <a href="awesomeDevsCell" className="text-blue-500">
+          <a
+            href="https://allup.world/user:5daf17bd-2da6-4a50-a3b9-bd6c41048445"
+            className="text-blue-500"
+          >
             (281) 795-8682
           </a>
           .
