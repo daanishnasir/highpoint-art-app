@@ -17,6 +17,7 @@ import { createListCollection } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { type CarImage } from "~/types";
+import BidComponent from "./BidComponent";
 
 const tabData = [
   { value: "all-listings", label: "All listings", isFirst: true },
@@ -48,6 +49,9 @@ const CarCard = ({
   index: number;
   onClick: () => void;
 }) => {
+  // Add 24 hours to current time for demo purposes
+  const endTime = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
   return (
     <motion.div
       whileHover={{
@@ -86,17 +90,10 @@ const CarCard = ({
         <p style={{ color: "#666", fontSize: "0.9rem" }}>
           Location: {image.user.location || "Unknown"}
         </p>
-        <p
-          style={{
-            color: "#000",
-            fontSize: "1.2rem",
-            fontWeight: "bold",
-            marginTop: "0.5rem",
-          }}
-        >
-          ${image.price?.toLocaleString() ?? "Unknown"}
-        </p>
       </div>
+      {(index === 0 || index === 1) && (
+        <BidComponent currentBid={image.price ?? 0} endTime={endTime} />
+      )}
     </motion.div>
   );
 };
@@ -306,7 +303,7 @@ const SearchCars = () => {
       data.results.map((img, index) => ({
         ...img,
         originalIndex: index,
-        price: SAMPLE_PRICES[index % SAMPLE_PRICES.length], // NOTE: will loop back if needed
+        price: SAMPLE_PRICES[index % SAMPLE_PRICES.length]!, // NOTE: will loop back if needed
       })),
     );
   };
