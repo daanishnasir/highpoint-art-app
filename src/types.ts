@@ -26,7 +26,7 @@ export interface ArtImage {
   primaryImage: string;
   primaryImageSmall: string;
   additionalImages: string[];
-  constituents: null | any; // Adjust type if needed
+  constituents: null | any;
   department: string;
   objectName: string;
   title: string;

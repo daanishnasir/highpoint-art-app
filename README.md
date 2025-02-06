@@ -2,6 +2,8 @@
 
 ## To Do
 
+pnpm run dev
+
 - [x] Create MET like navbar
 - [x] Implement expandable nav sections
 - [x] Add responsive mobile menu icon
