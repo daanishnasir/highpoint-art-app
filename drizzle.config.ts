@@ -6,7 +6,7 @@ export default {
   schema: "./src/server/db/schema.ts",
   dialect: "postgresql",
   dbCredentials: {
-    url: env.DATABASE_URL,
+    url: "postgresql://postgres:password@localhost:5432/highpoint-art-app",
   },
-  tablesFilter: ["hagerty-with-nextjs_*"],
+  tablesFilter: ["highpoint-art-app_*"],
 } satisfies Config;

@@ -16,8 +16,7 @@ import { SearchOutlined, CaretDownOutlined } from "@ant-design/icons";
 import { createListCollection } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { type CarImage } from "~/types";
-import BidComponent from "./BidComponent";
+import { type ArtImage } from "~/types";
 import { useRouter } from "next/navigation";
 import { useLocalStorage } from "usehooks-ts";
 import {
@@ -27,44 +26,27 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogRoot,
   DialogTitle,
   DialogTrigger,
+  DialogRoot,
 } from "~/components/ui/dialog";
-import { Button } from "~/components/ui/button";
 
 const tabData = [
-  { value: "all-listings", label: "All listings", isFirst: true },
-  { value: "auctions", label: "Auctions" },
-  { value: "classifieds", label: "Classifieds", isLast: true },
+  { value: "title", label: "Search by Title", isFirst: true },
+  { value: "id", label: "Search by ID", isLast: true },
 ];
 
-const sortOptions = createListCollection({
-  items: [
-    { label: "Recommended", value: "recommended" },
-    { label: "Least expensive", value: "least-expensive" },
-    { label: "Most expensive", value: "most-expensive" },
-  ],
-});
-
-const SAMPLE_PRICES = [
-  29500, 32000, 22250, 19800, 90000, 60000, 79500, 15500, 29000, 19500, 14500,
-  40000, 160000, 38000, 51000, 25500, 20500, 8000, 9000, 200000,
-];
-
-const CarCard = ({
+const ArtCard = ({
   image,
   index,
   onClick,
   isDarkMode,
 }: {
-  image: CarImage;
+  image: ArtImage;
   index: number;
   onClick: () => void;
   isDarkMode: boolean;
 }) => {
-  const endTime = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-
   return (
     <motion.div
       whileHover={{
@@ -78,18 +60,18 @@ const CarCard = ({
         backgroundColor: "white",
         boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
         cursor: "pointer",
-        height: "360px",
+        height: "480px",
         display: "flex",
         flexDirection: "column",
       }}
       onClick={onClick}
     >
       <img
-        src={image.urls.small}
-        alt={image.description}
+        src={image.primaryImageSmall}
+        alt={image.title}
         style={{
           width: "100%",
-          height: "200px",
+          height: "380px",
           objectFit: "cover",
         }}
       />
@@ -111,29 +93,27 @@ const CarCard = ({
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
-              color: isDarkMode ? "white" : "black",
+              color: "black",
             }}
           >
-            {image.description || "Vehicle"}
+            {image.title || "Artwork"}
           </h3>
           <p
             style={{
-              color: isDarkMode ? "white" : "black",
+              color: "black",
               fontSize: "0.9rem",
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
             }}
           >
-            Location: {image.user.location || "Unknown"}
+            Department: {image?.department || "Unknown"}
+          </p>
+          <p style={{ color: "black" }}>
+            Date: {image.objectDate || "Unknown"}
           </p>
         </div>
       </div>
-      <BidComponent
-        currentBid={image.price}
-        endTime={endTime}
-        isAuction={index === 0 || index === 1}
-      />
     </motion.div>
   );
 };
@@ -145,13 +125,34 @@ const SidePanel = ({
   index,
   isDarkMode,
 }: {
-  image: CarImage | null;
+  image: ArtImage | null;
   isOpen: boolean;
   onClose: () => void;
   index: number;
   isDarkMode: boolean;
 }) => {
   const router = useRouter();
+  const [detailedArt, setDetailedArt] = useState<ArtImage | null>(null);
+
+  useEffect(() => {
+    const fetchDetailedArt = async () => {
+      if (image?.objectID) {
+        try {
+          const response = await fetch(
+            `https://collectionapi.metmuseum.org/public/collection/v1/objects/${image.objectID}`,
+          );
+          const data = await response.json();
+          setDetailedArt(data);
+        } catch (error) {
+          console.error("Error fetching art details:", error);
+        }
+      }
+    };
+
+    if (isOpen && image) {
+      void fetchDetailedArt();
+    }
+  }, [isOpen, image]);
 
   return (
     <>
@@ -189,7 +190,7 @@ const SidePanel = ({
           overflowY: "auto",
         }}
       >
-        {image && (
+        {detailedArt && (
           <>
             <Box display="flex" justifyContent="flex-end" mb={4}>
               <Box
@@ -198,15 +199,15 @@ const SidePanel = ({
                 p={2}
                 _hover={{ bg: "gray.100" }}
                 borderRadius="md"
-                color={isDarkMode ? "white" : "black"}
+                color="black"
                 fontSize="24px"
               >
                 ✕
               </Box>
             </Box>
             <img
-              src={image.urls.regular}
-              alt={image.description}
+              src={detailedArt.primaryImage}
+              alt={detailedArt.title}
               style={{
                 width: "100%",
                 height: "300px",
@@ -215,62 +216,46 @@ const SidePanel = ({
               }}
             />
             <Box mt={4}>
-              <Text
-                fontSize="2xl"
-                fontWeight="bold"
-                color={isDarkMode ? "white" : "black"}
-              >
-                {image.description || "Vehicle"}
-              </Text>
-              <Text mt={2} color={isDarkMode ? "white" : "black"}>
-                Location: {image.user.location || "Unknown"}
-              </Text>
-              <Text
-                mt={2}
-                fontSize="xl"
-                fontWeight="bold"
-                color={isDarkMode ? "white" : "black"}
-              >
-                ${image.price?.toLocaleString() ?? "Unknown"}
+              <Text fontSize="2xl" fontWeight="bold" color="black">
+                {detailedArt.title || "Artwork"}
               </Text>
 
-              <Box
-                as="button"
-                mt={4}
-                w="full"
-                bg={index === 0 || index === 1 ? "#C41E3A" : "#E2E8F0"}
-                color={index === 0 || index === 1 ? "white" : "gray.600"}
-                py={3}
-                px={4}
-                borderRadius="full"
-                border="1px solid"
-                borderColor={index === 0 || index === 1 ? "#C41E3A" : "#94A3B8"}
-                _hover={{
-                  bg: index === 0 || index === 1 ? "#A01830" : "#CBD5E0",
-                }}
-                fontWeight="bold"
-              >
-                Place Bid
+              <Box mt={4}>
+                {detailedArt.artistDisplayName && (
+                  <Text mt={2} color="black">
+                    Artist: {detailedArt.artistDisplayName}
+                  </Text>
+                )}
+                {detailedArt.department && (
+                  <Text mt={2} color="black">
+                    Department: {detailedArt.department}
+                  </Text>
+                )}
+                {detailedArt.period && (
+                  <Text mt={2} color="black">
+                    Period: {detailedArt.period}
+                  </Text>
+                )}
+                {detailedArt.culture && (
+                  <Text mt={2} color="black">
+                    Culture: {detailedArt.culture}
+                  </Text>
+                )}
+                {detailedArt.medium && (
+                  <Text mt={2} color="black">
+                    Medium: {detailedArt.medium}
+                  </Text>
+                )}
+                {detailedArt.dimensions && (
+                  <Text mt={2} color="black">
+                    Dimensions: {detailedArt.dimensions}
+                  </Text>
+                )}
               </Box>
 
               <Box
                 as="button"
-                mt={4}
-                w="full"
-                bg="#0088CC"
-                color="white"
-                py={3}
-                px={4}
-                borderRadius="full"
-                _hover={{ bg: "#0077B3" }}
-                fontWeight="bold"
-              >
-                Message Seller
-              </Box>
-
-              <Box
-                as="button"
-                mt={2}
+                mt={6}
                 w="full"
                 bg="transparent"
                 color="#0088CC"
@@ -281,100 +266,33 @@ const SidePanel = ({
                 _hover={{ bg: "rgba(0, 136, 204, 0.1)" }}
                 fontWeight="bold"
                 onClick={() => {
-                  router.push(`/auction/${image?.id}`);
+                  router.push(`/auction/${detailedArt?.objectID}`);
                 }}
               >
-                More Details
+                View Full Details
               </Box>
 
-              <Box mt={6}>
-                <Text
-                  fontSize="xl"
-                  fontWeight="bold"
-                  color={isDarkMode ? "white" : "black"}
-                >
-                  Paint and exterior
-                </Text>
-                <Text mt={1} color={isDarkMode ? "white" : "black"}>
-                  Shows in good condition but could use refinishing
-                </Text>
+              {detailedArt.creditLine && (
+                <Box mt={6}>
+                  <Text fontSize="xl" fontWeight="bold" color="black">
+                    Credit
+                  </Text>
+                  <Text mt={1} color="black">
+                    {detailedArt.creditLine}
+                  </Text>
+                </Box>
+              )}
 
-                <Text
-                  fontSize="xl"
-                  fontWeight="bold"
-                  mt={4}
-                  color={isDarkMode ? "white" : "black"}
-                >
-                  Upholstery and interior
-                </Text>
-                <Text mt={1} color={isDarkMode ? "white" : "black"}>
-                  Shows in great condition with no strange odors, rips, or
-                  stains.
-                </Text>
-
-                <Text
-                  fontSize="xl"
-                  fontWeight="bold"
-                  mt={4}
-                  color={isDarkMode ? "white" : "black"}
-                >
-                  Mileage
-                </Text>
-                <Text mt={1} color={isDarkMode ? "white" : "black"}>
-                  Being a 1-Owner car, it was driven much more frequently at
-                  first but, through the years, became more of a weekend/road
-                  trip car.
-                </Text>
-
-                <Text
-                  fontSize="xl"
-                  fontWeight="bold"
-                  mt={4}
-                  color={isDarkMode ? "white" : "black"}
-                >
-                  Wheels and tires
-                </Text>
-                <Text mt={1} color={isDarkMode ? "white" : "black"}>
-                  Factory wheels wrapped in Hancock tires [P185/75R14]
-                </Text>
-
-                <Text
-                  fontSize="xl"
-                  fontWeight="bold"
-                  mt={4}
-                  color={isDarkMode ? "white" : "black"}
-                >
-                  Brakes
-                </Text>
-                <Text mt={1} color={isDarkMode ? "white" : "black"}>
-                  Factory brakes. They work as intended but could use a refresh.
-                </Text>
-
-                <Text
-                  fontSize="xl"
-                  fontWeight="bold"
-                  mt={4}
-                  color={isDarkMode ? "white" : "black"}
-                >
-                  Transmission
-                </Text>
-                <Text mt={1} color={isDarkMode ? "white" : "black"}>
-                  Factory transmission. Works as intended [rebuilt in approx.
-                  2015]
-                </Text>
-
-                <Text
-                  fontSize="xl"
-                  fontWeight="bold"
-                  mt={4}
-                  color={isDarkMode ? "white" : "black"}
-                >
-                  Warranty
-                </Text>
-                <Text mt={1} color={isDarkMode ? "white" : "black"}>
-                  No
-                </Text>
-              </Box>
+              {detailedArt.department && (
+                <Box mt={4}>
+                  <Text fontSize="xl" fontWeight="bold" color="black">
+                    Department
+                  </Text>
+                  <Text mt={1} color="black">
+                    {detailedArt.department}
+                  </Text>
+                </Box>
+              )}
             </Box>
           </>
         )}
@@ -383,17 +301,18 @@ const SidePanel = ({
   );
 };
 
-const SearchCars = () => {
-  const [isDarkMode] = useLocalStorage<boolean>("hagerty-dark-mode", false, {
+const SearchArt = () => {
+  const [isDarkMode] = useLocalStorage<boolean>("darkMode", false, {
     initializeWithValue: false,
   });
-  const [tab, setTab] = useState<string | null>("all-listings");
+  const [tab, setTab] = useState<string | null>("title");
   const [sortValue, setSortValue] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");
-  const [selectedCar, setSelectedCar] = useState<CarImage | null>(null);
+  const [selectedArt, setSelectedArt] = useState<ArtImage | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
-  const [images, setImages] = useState<CarImage[]>([]);
+  const [images, setImages] = useState<ArtImage[]>([]);
+  const [departments, setDepartments] = useState<string[]>([]);
 
   const getTabStyles = (tabValue: string) => ({
     padding: "10px 20px",
@@ -401,61 +320,92 @@ const SearchCars = () => {
     backgroundColor: tab === tabValue ? "#000" : "#fff",
     color: tab === tabValue ? "#fff" : "#333",
     borderRadius:
-      tabValue === "all-listings"
+      tabValue === "title"
         ? "4px 0 0 4px"
-        : tabValue === "classifieds"
+        : tabValue === "id"
           ? "0 4px 4px 0"
           : undefined,
   });
 
-  const [isLoading, setIsLoading] = useState<boolean>(false); // TODO: maybe add skeleton loader later
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const fetchImages = async () => {
+  const fetchMetObjectsByTitle = async (title: string) => {
     const response = await fetch(
-      `https://api.unsplash.com/search/photos?query=${searchValue}&client_id=${process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY}`,
+      `https://collectionapi.metmuseum.org/public/collection/v1/search?title=true&q=${encodeURIComponent(
+        title,
+      )}`,
     );
-    const data = (await response.json()) as { results: CarImage[] };
-    setImages(
-      data.results.map((img, index) => ({
-        ...img,
-        originalIndex: index,
-        price: SAMPLE_PRICES[index % SAMPLE_PRICES.length]!, // NOTE: will loop back if needed
-      })),
+    const data = await response.json();
+    const objectIDs = data.objectIDs || [];
+
+    const objects = await Promise.all(
+      // TODO check if we can fetch multiple otherwise just keep this
+      objectIDs.slice(0, 10).map(async (id: number) => {
+        const objectResponse = await fetch(
+          `https://collectionapi.metmuseum.org/public/collection/v1/objects/${id}`,
+        );
+        return objectResponse.json();
+      }),
     );
+
+    const artworks = objects.map((obj, index) => ({
+      ...obj,
+      originalIndex: index,
+    }));
+
+    const uniqueDepartments = Array.from(
+      new Set(artworks.map((obj) => obj.department).filter(Boolean)),
+    ).sort();
+
+    setDepartments(uniqueDepartments);
+    setImages(artworks);
   };
 
-  const useDebounce = (value: string, delay: number) => {
-    const [debouncedValue, setDebouncedValue] = useState(value);
-    useEffect(() => {
-      const handler = setTimeout(() => {
-        setDebouncedValue(value);
-      }, delay);
-      return () => clearTimeout(handler);
-    }, [value, delay]);
-    return debouncedValue;
+  const fetchMetObjectById = async (objectId: string) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(
+        `https://collectionapi.metmuseum.org/public/collection/v1/objects/${objectId}`,
+      );
+      const data = await response.json();
+      if (data.objectID) {
+        setImages([data]);
+        setDepartments(data.department ? [data.department] : []);
+      } else {
+        setImages([]);
+        setDepartments([]);
+      }
+    } catch (error) {
+      console.error("Error fetching art by ID:", error);
+      setImages([]);
+      setDepartments([]);
+    }
+    setIsLoading(false);
   };
 
-  // const debouncedSearchValue = useDebounce(searchValue, 500);
-
-  const handleCardClick = (image: CarImage, index: number) => {
-    setSelectedCar(image);
+  const handleCardClick = (image: ArtImage, index: number) => {
+    setSelectedArt(image);
     setSelectedIndex(index);
     setIsPanelOpen(true);
   };
 
-  const getSortedImages = () => {
-    if (!sortValue.length) return images;
+  const sortOptions = createListCollection({
+    items: [
+      { label: "All Departments", value: "all" },
+      ...departments.map((dept) => ({
+        label: dept,
+        value: dept.toLowerCase().replace(/\s+/g, "-"),
+      })),
+    ],
+  });
 
-    return [...images].sort((a, b) => {
-      switch (sortValue[0]) {
-        case "most-expensive":
-          return (b.price ?? 0) - (a.price ?? 0);
-        case "least-expensive":
-          return (a.price ?? 0) - (b.price ?? 0);
-        default:
-          return 0;
-      }
-    });
+  const getSortedImages = () => {
+    if (!sortValue.length || sortValue[0] === "all") return images;
+
+    return [...images].filter(
+      (img) =>
+        img.department.toLowerCase().replace(/\s+/g, "-") === sortValue[0],
+    );
   };
 
   return (
@@ -482,9 +432,13 @@ const SearchCars = () => {
         />
         <Input
           type="text"
-          placeholder="Search vehicle make and hit enter"
+          placeholder={
+            tab === "title"
+              ? "Search artwork title and hit enter, ex: glass, vase, jug"
+              : "Enter artwork Object ID and hit enter, ex: 245376"
+          }
           border="none"
-          _placeholder={{ color: isDarkMode ? "gray.400" : "gray.500" }}
+          _placeholder={{ color: isDarkMode ? "gray.500" : "gray.500" }}
           _focus={{
             boxShadow: "none",
             outline: "none",
@@ -498,11 +452,12 @@ const SearchCars = () => {
           onChange={(e) => setSearchValue(e.target.value)}
           onKeyDown={async (e) => {
             if (e.key === "Enter") {
-              await fetchImages();
+              if (tab === "title") {
+                await fetchMetObjectsByTitle(searchValue);
+              } else {
+                await fetchMetObjectById(searchValue);
+              }
             }
-          }}
-          style={{
-            color: isDarkMode ? "white" : "black",
           }}
         />
       </Box>
@@ -516,9 +471,12 @@ const SearchCars = () => {
         mb={4}
       >
         <Tabs.Root
-          defaultValue="all-listings"
+          defaultValue="title"
           value={tab}
-          onValueChange={(e) => setTab(e.value)}
+          onValueChange={(e) => {
+            setTab(e.value);
+            setSearchValue(""); //Note: clear search input if tab changes
+          }}
         >
           <Tabs.List width={{ base: "100%", md: "auto" }} display="flex">
             {tabData.map((tab) => (
@@ -526,6 +484,7 @@ const SearchCars = () => {
                 key={tab.value}
                 value={tab.value}
                 style={getTabStyles(tab.value)}
+                F
                 flex={{ base: 1, md: "none" }}
               >
                 {tab.label}
@@ -555,20 +514,33 @@ const SearchCars = () => {
                   fontWeight="bold"
                   fontSize="lg"
                 >
-                  Bid All
+                  What Tech?
                 </Box>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle fontSize="2xl" fontWeight="bold">
-                    Bid on EVERYTHING.{" "}
+                    What tech was used to make this?
                   </DialogTitle>
                 </DialogHeader>
                 <DialogBody>
-                  <p>
-                    Are you sure you want to do this? Are you Jay Leno? This is
-                    kind of crazy.
+                  <p className="mb-4">
+                    Whats up Phillip, Tim, built this app using:
                   </p>
+                  <ul className="list-disc space-y-2 pl-6">
+                    <li>Next.js Routing</li>
+                    <li>React and Typescript because I'm a big fan</li>
+                    <li>Tailwind CSS for styling</li>
+                    <li>Framer Motion for the cool animations</li>
+                    <li>
+                      Chakra UI for components like Buttons, Tabs, Dropdowns,
+                      etc.
+                    </li>
+                    <li>
+                      It's mobile responsive as well (for the most part), try it
+                      out!
+                    </li>
+                  </ul>
                 </DialogBody>
                 <DialogFooter display="flex" justifyContent="flex-end" gap={2}>
                   <DialogActionTrigger asChild>
@@ -581,26 +553,15 @@ const SearchCars = () => {
                       py={2}
                       _hover={{ bg: "gray.100" }}
                     >
-                      Cancel
+                      Close
                     </Box>
                   </DialogActionTrigger>
-                  <Box
-                    as="button"
-                    bg="red.500"
-                    color="white"
-                    borderRadius="md"
-                    px={4}
-                    py={2}
-                    _hover={{ bg: "red.600" }}
-                  >
-                    Do it.
-                  </Box>
                 </DialogFooter>
               </DialogContent>
             </DialogRoot>
           )}
 
-          <Box position="relative" width={{ base: "100%", md: "200px" }}>
+          <Box position="relative" width={{ base: "100%", md: "400px" }}>
             <SelectRoot
               collection={sortOptions}
               width="100%"
@@ -611,13 +572,28 @@ const SearchCars = () => {
                 display="flex"
                 alignItems="center"
                 justifyContent="space-between"
-                gap={1}
+                gap={3}
+                px={4}
+                py={2}
               >
-                <Box display="flex" alignItems="center" gap={1}>
-                  <Box as="span" color={isDarkMode ? "blue.400" : "gray.600"}>
-                    Sort by:
+                <Box display="flex" alignItems="center" gap={2} width="100%">
+                  <Box
+                    as="span"
+                    color={isDarkMode ? "blue.400" : "gray.600"}
+                    whiteSpace="nowrap"
+                  >
+                    Sort by Department:
                   </Box>
-                  <SelectValueText placeholder="Recommended" />
+                  <Box flex="1" minWidth="0">
+                    <SelectValueText
+                      placeholder="All Departments"
+                      style={{
+                        whiteSpace: "nowrap",
+                        overflow: "visible",
+                        textOverflow: "clip",
+                      }}
+                    />
+                  </Box>
                 </Box>
                 <CaretDownOutlined
                   style={{ fontSize: "12px", color: "#666" }}
@@ -632,7 +608,7 @@ const SearchCars = () => {
                 mt={1}
                 top="100%"
                 right={0}
-                minWidth="200px"
+                minWidth="400px"
                 py={2}
               >
                 {sortOptions.items.map((option) => (
@@ -661,9 +637,9 @@ const SearchCars = () => {
           padding: "2rem 0",
         }}
       >
-        {getSortedImages().map((image: CarImage, index: number) => (
-          <div key={image.id}>
-            <CarCard
+        {getSortedImages().map((image: ArtImage, index: number) => (
+          <div key={image.objectID}>
+            <ArtCard
               image={image}
               index={index}
               onClick={() => handleCardClick(image, index)}
@@ -674,7 +650,7 @@ const SearchCars = () => {
       </div>
 
       <SidePanel
-        image={selectedCar}
+        image={selectedArt}
         isOpen={isPanelOpen}
         onClose={() => setIsPanelOpen(false)}
         index={selectedIndex}
@@ -684,4 +660,4 @@ const SearchCars = () => {
   );
 };
 
-export default SearchCars;
+export default SearchArt;

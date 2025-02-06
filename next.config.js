@@ -7,7 +7,11 @@ import "./src/env.js";
 /** @type {import("next").NextConfig} */
 const config = {
   images: {
-    domains: ["images.unsplash.com", "api.unsplash.com"],
+    domains: [
+      "collectionapi.metmuseum.org",
+      "www.metmuseum.org",
+      "images.metmuseum.org",
+    ],
   },
 
   typescript: {

@@ -16,7 +16,9 @@ import {
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
-export const createTable = pgTableCreator((name) => `hagerty-with-nextjs_${name}`);
+export const createTable = pgTableCreator(
+  (name) => `highpoint-art-app_${name}`,
+);
 
 export const posts = createTable(
   "post",
@@ -27,10 +29,10 @@ export const posts = createTable(
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
-      () => new Date()
+      () => new Date(),
     ),
   },
   (example) => ({
     nameIndex: index("name_idx").on(example.name),
-  })
+  }),
 );

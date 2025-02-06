@@ -1,5 +1,5 @@
 import Navbar from "./navbar/navbar";
-import SearchCars from "./marketPlaceSearch/searchCars";
-import { menuItems } from "./mockdata";
+import SearchArt from "./artSearch/searchArt";
+import { ArtworkDetail } from "./artWorkDetail/artworkDetail";
 
-export { Navbar, SearchCars, menuItems };
+export { Navbar, SearchArt, ArtworkDetail };
