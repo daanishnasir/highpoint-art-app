@@ -1,4 +1,4 @@
-import { SearchArt, Navbar } from "./_components";
+import { SearchArt } from "./_components";
 
 export default function HomePage() {
   return (

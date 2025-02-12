@@ -6,6 +6,7 @@ import { MenuOutlined } from "@ant-design/icons";
 import { Switch } from "~/components/ui/switch";
 import styles from "./navbar.module.css";
 import { useLocalStorage } from "usehooks-ts";
+import { match } from "ts-pattern";
 
 interface CustomCSSProperties extends CSSProperties {
   "--underline-color"?: string;
@@ -142,6 +143,7 @@ const ArtMenu = ({ isDarkMode }: { isDarkMode: boolean }) => (
 );
 
 const LearnMenu = ({ isDarkMode }: { isDarkMode: boolean }) => (
+  // Note: Tailwind learnings:  pb-4 is 1 rem, pb-8 is 2 rem, pb-2 is 0.5 rem, px-4 is padding left and right at 1rem
   <div className="animateFadeIn hidden justify-center p-4 pb-8 md:flex">
     <div className="grid grid-cols-3 gap-16">
       <div className={styles.NavColMenu}>
@@ -172,15 +174,24 @@ const LearnMenu = ({ isDarkMode }: { isDarkMode: boolean }) => (
   </div>
 );
 
+enum MenuItems {
+  VISIT = "Visit",
+  EXHIBITIONS = "Exhibitions and Events",
+  ART = "Art",
+  LEARN = "Learn with Us",
+  RESEARCH = "Research",
+  SHOP = "Shop",
+}
+
 export const Navbar = () => {
-  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [activeMenu, setActiveMenu] = useState<MenuItems | null>(null);
   const [isDarkMode, setIsDarkMode] = useLocalStorage<boolean>(
     "darkMode",
     false,
     { initializeWithValue: false },
   );
 
-  const handleMouseEnter = (menu: string) => {
+  const handleMouseEnter = (menu: MenuItems) => {
     setActiveMenu(menu);
   };
 
@@ -189,11 +200,7 @@ export const Navbar = () => {
   };
 
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    document.documentElement.classList.toggle("dark", isDarkMode);
   }, [isDarkMode]);
 
   return (
@@ -221,19 +228,19 @@ export const Navbar = () => {
         </div>
         <div className="hidden gap-8 md:flex">
           {[
-            "Visit",
-            "Exhibitions and Events",
-            "Art",
-            "Learn with Us",
-            "Research",
-            "Shop",
+            MenuItems.VISIT,
+            MenuItems.EXHIBITIONS,
+            MenuItems.ART,
+            MenuItems.LEARN,
+            MenuItems.RESEARCH,
+            MenuItems.SHOP,
           ].map((item) => (
             <div
               key={item}
               className="group relative cursor-pointer"
               onMouseEnter={() => handleMouseEnter(item)}
               onClick={() => {
-                if (item === "Visit") {
+                if (item === MenuItems.VISIT) {
                   window.location.href = "/";
                 }
               }}
@@ -280,18 +287,18 @@ export const Navbar = () => {
       )}
       <div
         className={`transition-max-height overflow-hidden border-t ${!isDarkMode ? "border-gray-700 bg-black" : "border-gray-300 bg-white"} duration-300 ease-in-out ${
-          activeMenu ? "max-h-96" : "max-h-0"
+          activeMenu ? "max-h-96" : "max-h-0" // NOTE: on hover nav height expands to 96px to show menu items
         } md:max-h-full`}
         onMouseEnter={() => setActiveMenu(activeMenu)}
       >
-        {activeMenu === "Visit" && <VisitMenu isDarkMode={isDarkMode} />}
-        {activeMenu === "Exhibitions and Events" && (
-          <ExhibitionsMenu isDarkMode={isDarkMode} />
-        )}
-        {activeMenu === "Art" && <ArtMenu isDarkMode={isDarkMode} />}
-        {activeMenu === "Learn with Us" && (
-          <LearnMenu isDarkMode={isDarkMode} />
-        )}
+        {match(activeMenu)
+          .with(MenuItems.VISIT, () => <VisitMenu isDarkMode={isDarkMode} />)
+          .with(MenuItems.EXHIBITIONS, () => (
+            <ExhibitionsMenu isDarkMode={isDarkMode} />
+          ))
+          .with(MenuItems.ART, () => <ArtMenu isDarkMode={isDarkMode} />)
+          .with(MenuItems.LEARN, () => <LearnMenu isDarkMode={isDarkMode} />)
+          .otherwise(() => null)}
       </div>
     </div>
   );

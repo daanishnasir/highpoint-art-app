@@ -16,12 +16,19 @@ export default function ArtDetailsPage() {
     const fetchArt = async () => {
       try {
         const response = await fetch(
-          `https://collectionapi.metmuseum.org/public/collection/v1/objects/${params.id}`,
+          `https://collectionapi.metmuseum.org/public/collection/v1/objects/${params.id?.toString()}`,
         );
-        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+        const data = (await response.json()) as ArtImage;
+        if (!data.objectID) {
+          throw new Error("Invalid art data received");
+        }
         setArt(data);
       } catch (error) {
         console.error("Error fetching art:", error);
+        setArt(null);
       } finally {
         setIsLoading(false);
       }

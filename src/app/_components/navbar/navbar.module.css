@@ -1,7 +1,9 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateX(-10px);
+    transform: translateX(
+      -10px
+    ); /* The distance the items move from left to original position */
   }
   to {
     opacity: 1;
@@ -22,7 +24,7 @@
   display: inline-block;
   cursor: pointer;
   font-size: 14px;
-  --underline-color: black;
+  --underline-color: black; /* define css variable, should work */
 }
 
 .underlineHover::after {

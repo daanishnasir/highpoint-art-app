@@ -22,7 +22,6 @@ import { useLocalStorage } from "usehooks-ts";
 import {
   DialogActionTrigger,
   DialogBody,
-  DialogCloseTrigger,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -30,6 +29,7 @@ import {
   DialogTrigger,
   DialogRoot,
 } from "~/components/ui/dialog";
+import styles from "./searchArt.module.css";
 
 const tabData = [
   { value: "title", label: "Search by Title", isFirst: true },
@@ -38,14 +38,10 @@ const tabData = [
 
 const ArtCard = ({
   image,
-  index,
   onClick,
-  isDarkMode,
 }: {
   image: ArtImage;
-  index: number;
   onClick: () => void;
-  isDarkMode: boolean;
 }) => {
   return (
     <motion.div
@@ -54,62 +50,21 @@ const ArtCard = ({
         y: -5,
         transition: { duration: 0.2 },
       }}
-      style={{
-        borderRadius: "8px",
-        overflow: "hidden",
-        backgroundColor: "white",
-        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-        cursor: "pointer",
-        height: "480px",
-        display: "flex",
-        flexDirection: "column",
-      }}
+      className={styles.artCard}
       onClick={onClick}
     >
       <img
         src={image.primaryImageSmall}
         alt={image.title}
-        style={{
-          width: "100%",
-          height: "380px",
-          objectFit: "cover",
-        }}
+        className={styles.artCardImage}
       />
-      <div
-        style={{
-          padding: "12px 16px",
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-        }}
-      >
+      <div className={styles.artCardContent}>
         <div>
-          <h3
-            style={{
-              fontSize: "1.1rem",
-              fontWeight: "bold",
-              marginBottom: "4px",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              color: "black",
-            }}
-          >
-            {image.title || "Artwork"}
-          </h3>
-          <p
-            style={{
-              color: "black",
-              fontSize: "0.9rem",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-          >
+          <h3 className={styles.artCardTitle}>{image.title || "Artwork"}</h3>
+          <p className={styles.artCardText}>
             Department: {image?.department || "Unknown"}
           </p>
-          <p style={{ color: "black" }}>
+          <p className={styles.artCardText}>
             Date: {image.objectDate || "Unknown"}
           </p>
         </div>
@@ -122,14 +77,10 @@ const SidePanel = ({
   image,
   isOpen,
   onClose,
-  index,
-  isDarkMode,
 }: {
   image: ArtImage | null;
   isOpen: boolean;
   onClose: () => void;
-  index: number;
-  isDarkMode: boolean;
 }) => {
   const router = useRouter();
   const [detailedArt, setDetailedArt] = useState<ArtImage | null>(null);
@@ -141,7 +92,7 @@ const SidePanel = ({
           const response = await fetch(
             `https://collectionapi.metmuseum.org/public/collection/v1/objects/${image.objectID}`,
           );
-          const data = await response.json();
+          const data = (await response.json()) as ArtImage;
           setDetailedArt(data);
         } catch (error) {
           console.error("Error fetching art details:", error);
@@ -156,39 +107,22 @@ const SidePanel = ({
 
   return (
     <>
+      {/* add dark layer behind panel */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: isOpen ? 0.4 : 0 }}
         transition={{ duration: 0.2 }}
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          background: "black",
-          zIndex: 999,
-          display: isOpen ? "block" : "none",
-        }}
+        className={styles.sidePanelOverlay}
+        style={{ display: isOpen ? "block" : "none" }}
         onClick={onClose}
       />
 
+      {/* NOTE: move panel in and out of view */}
       <motion.div
         initial={{ x: "100%" }}
         animate={{ x: isOpen ? 0 : "100%" }}
         transition={{ type: "spring", damping: 20 }}
-        style={{
-          position: "fixed",
-          top: 0,
-          right: 0,
-          width: "400px",
-          height: "100vh",
-          backgroundColor: "white",
-          boxShadow: "-4px 0 10px rgba(0,0,0,0.1)",
-          zIndex: 1000,
-          padding: "2rem",
-          overflowY: "auto",
-        }}
+        className={styles.sidePanel}
       >
         {detailedArt && (
           <>
@@ -208,12 +142,7 @@ const SidePanel = ({
             <img
               src={detailedArt.primaryImage}
               alt={detailedArt.title}
-              style={{
-                width: "100%",
-                height: "300px",
-                objectFit: "cover",
-                borderRadius: "8px",
-              }}
+              className={styles.sidePanelImage}
             />
             <Box mt={4}>
               <Text fontSize="2xl" fontWeight="bold" color="black">
@@ -255,16 +184,7 @@ const SidePanel = ({
 
               <Box
                 as="button"
-                mt={6}
-                w="full"
-                bg="transparent"
-                color="#0088CC"
-                py={3}
-                px={4}
-                borderRadius="full"
-                border="2px solid #0088CC"
-                _hover={{ bg: "rgba(0, 136, 204, 0.1)" }}
-                fontWeight="bold"
+                className={styles.viewDetailsButton}
                 onClick={() => {
                   router.push(`/auction/${detailedArt?.objectID}`);
                 }}
@@ -301,6 +221,11 @@ const SidePanel = ({
   );
 };
 
+interface MetSearchResponse {
+  total: number;
+  objectIDs: number[] | null;
+}
+
 const SearchArt = () => {
   const [isDarkMode] = useLocalStorage<boolean>("darkMode", false, {
     initializeWithValue: false,
@@ -309,7 +234,6 @@ const SearchArt = () => {
   const [sortValue, setSortValue] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");
   const [selectedArt, setSelectedArt] = useState<ArtImage | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [images, setImages] = useState<ArtImage[]>([]);
   const [departments, setDepartments] = useState<string[]>([]);
@@ -319,55 +243,54 @@ const SearchArt = () => {
     border: "1px solid #ccc",
     backgroundColor: tab === tabValue ? "#000" : "#fff",
     color: tab === tabValue ? "#fff" : "#333",
-    borderRadius:
-      tabValue === "title"
-        ? "4px 0 0 4px"
-        : tabValue === "id"
-          ? "0 4px 4px 0"
-          : undefined,
+    borderRadius: tabValue === "title" ? "4px 0 0 4px" : "0 4px 4px 0",
   });
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
   const fetchMetObjectsByTitle = async (title: string) => {
-    const response = await fetch(
-      `https://collectionapi.metmuseum.org/public/collection/v1/search?title=true&q=${encodeURIComponent(
-        title,
-      )}`,
-    );
-    const data = await response.json();
-    const objectIDs = data.objectIDs || [];
+    try {
+      const response = await fetch(
+        `https://collectionapi.metmuseum.org/public/collection/v1/search?q=${encodeURIComponent(
+          title,
+        )}`,
+      );
+      const data = (await response.json()) as MetSearchResponse;
 
-    const objects = await Promise.all(
-      // TODO check if we can fetch multiple otherwise just keep this
-      objectIDs.slice(0, 10).map(async (id: number) => {
-        const objectResponse = await fetch(
-          `https://collectionapi.metmuseum.org/public/collection/v1/objects/${id}`,
-        );
-        return objectResponse.json();
-      }),
-    );
+      const objectIDs = data.objectIDs ?? [];
 
-    const artworks = objects.map((obj, index) => ({
-      ...obj,
-      originalIndex: index,
-    }));
+      const objects = await Promise.all(
+        objectIDs.slice(0, 10).map(async (id: number) => {
+          const objectResponse = await fetch(
+            `https://collectionapi.metmuseum.org/public/collection/v1/objects/${id}`,
+          );
+          const objectData = (await objectResponse.json()) as ArtImage;
+          return objectData;
+        }),
+      );
 
-    const uniqueDepartments = Array.from(
-      new Set(artworks.map((obj) => obj.department).filter(Boolean)),
-    ).sort();
+      const artworks = objects.map((obj, index) => ({
+        ...obj,
+        originalIndex: index,
+      })) as ArtImage[];
 
-    setDepartments(uniqueDepartments);
-    setImages(artworks);
+      const uniqueDepartments = Array.from(
+        new Set(artworks.map((obj) => obj.department).filter(Boolean)),
+      ).sort();
+
+      setDepartments(uniqueDepartments);
+      setImages(artworks);
+    } catch (error) {
+      console.error("Error fetching art by title:", error);
+      setImages([]);
+      setDepartments([]);
+    }
   };
 
   const fetchMetObjectById = async (objectId: string) => {
-    setIsLoading(true);
     try {
       const response = await fetch(
         `https://collectionapi.metmuseum.org/public/collection/v1/objects/${objectId}`,
       );
-      const data = await response.json();
+      const data = (await response.json()) as ArtImage;
       if (data.objectID) {
         setImages([data]);
         setDepartments(data.department ? [data.department] : []);
@@ -380,12 +303,10 @@ const SearchArt = () => {
       setImages([]);
       setDepartments([]);
     }
-    setIsLoading(false);
   };
 
-  const handleCardClick = (image: ArtImage, index: number) => {
+  const handleCardClick = (image: ArtImage) => {
     setSelectedArt(image);
-    setSelectedIndex(index);
     setIsPanelOpen(true);
   };
 
@@ -394,7 +315,7 @@ const SearchArt = () => {
       { label: "All Departments", value: "all" },
       ...departments.map((dept) => ({
         label: dept,
-        value: dept.toLowerCase().replace(/\s+/g, "-"),
+        value: dept,
       })),
     ],
   });
@@ -402,10 +323,7 @@ const SearchArt = () => {
   const getSortedImages = () => {
     if (!sortValue.length || sortValue[0] === "all") return images;
 
-    return [...images].filter(
-      (img) =>
-        img.department.toLowerCase().replace(/\s+/g, "-") === sortValue[0],
-    );
+    return [...images].filter((img) => img.department === sortValue[0]);
   };
 
   return (
@@ -484,7 +402,6 @@ const SearchArt = () => {
                 key={tab.value}
                 value={tab.value}
                 style={getTabStyles(tab.value)}
-                F
                 flex={{ base: 1, md: "none" }}
               >
                 {tab.label}
@@ -527,9 +444,10 @@ const SearchArt = () => {
                   <p className="mb-4">
                     Whats up Phillip, Tim, built this app using:
                   </p>
+                  {/* space-y-2 adds padding between the li's  */}
                   <ul className="list-disc space-y-2 pl-6">
                     <li>Next.js Routing</li>
-                    <li>React and Typescript because I'm a big fan</li>
+                    <li>React and Typescript because I&apos;m a big fan</li>
                     <li>Tailwind CSS for styling</li>
                     <li>Framer Motion for the cool animations</li>
                     <li>
@@ -537,8 +455,8 @@ const SearchArt = () => {
                       etc.
                     </li>
                     <li>
-                      It's mobile responsive as well (for the most part), try it
-                      out!
+                      It&apos;s mobile responsive as well (for the most part),
+                      try it out!
                     </li>
                   </ul>
                 </DialogBody>
@@ -629,22 +547,10 @@ const SearchArt = () => {
         </Box>
       </Box>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-          gap: "2rem",
-          padding: "2rem 0",
-        }}
-      >
-        {getSortedImages().map((image: ArtImage, index: number) => (
+      <div className={styles.artGrid}>
+        {getSortedImages().map((image: ArtImage) => (
           <div key={image.objectID}>
-            <ArtCard
-              image={image}
-              index={index}
-              onClick={() => handleCardClick(image, index)}
-              isDarkMode={isDarkMode}
-            />
+            <ArtCard image={image} onClick={() => handleCardClick(image)} />
           </div>
         ))}
       </div>
@@ -653,8 +559,6 @@ const SearchArt = () => {
         image={selectedArt}
         isOpen={isPanelOpen}
         onClose={() => setIsPanelOpen(false)}
-        index={selectedIndex}
-        isDarkMode={isDarkMode}
       />
     </Box>
   );

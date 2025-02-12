@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { useLocalStorage } from "usehooks-ts";
 import { type ArtImage } from "~/types";
 
@@ -124,16 +125,16 @@ const DetailRow = ({
 
   return (
     <div className="border-t border-gray-200 py-3">
-      <dt
+      <div
         className={`text-sm font-medium ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}
       >
         {label}
-      </dt>
-      <dd
+      </div>
+      <div
         className={`mt-1 text-sm ${isDarkMode ? "text-white" : "text-gray-900"}`}
       >
         {value}
-      </dd>
+      </div>
     </div>
   );
 };
