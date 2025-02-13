@@ -7,6 +7,14 @@ import { Switch } from "~/components/ui/switch";
 import styles from "./navbar.module.css";
 import { useLocalStorage } from "usehooks-ts";
 import { match } from "ts-pattern";
+import {
+  SignedIn,
+  SignedOut,
+  SignIn,
+  SignInButton,
+  SignOutButton,
+  UserButton,
+} from "@clerk/nextjs";
 
 interface CustomCSSProperties extends CSSProperties {
   "--underline-color"?: string;
@@ -262,7 +270,13 @@ export const Navbar = () => {
           <div
             className={`hidden cursor-pointer rounded-md border ${!isDarkMode ? "border-white" : "border-black"} px-4 py-2 transition-colors duration-300 ${!isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-200"} md:block`}
           >
-            Log in
+            {/* Log in */}
+            <SignedOut>
+              <SignInButton />
+            </SignedOut>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
           </div>
           <MenuOutlined
             className={`cursor-pointer text-xl ${!isDarkMode ? "text-white" : "text-black"}`}
